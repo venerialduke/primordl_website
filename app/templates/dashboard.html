@@ -7,6 +7,16 @@
 </head>
 <body>
     <h1>Your Dashboard</h1>
+    
+    <h2>Your Skills</h2>
+    <ul>
+        {% for skill in skills %}
+            <li>{{ skill.name }}: {{ skill.description }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('create_skill') }}">Create a New Skill</a><br>
+
+
     <h2>Your Characters</h2>
     <ul>
         {% for character in characters %}

@@ -2,7 +2,7 @@ from openai import OpenAI
 import os
 from flask import render_template, flash, redirect, url_for, request
 from app import app, db, login
-from app.models import User, Character
+from app.models import User, Character, Skill
 #from werkzeug.urls import url_parse
 from flask_login import current_user, login_user, logout_user, login_required, LoginManager
 
@@ -58,12 +58,25 @@ def login():
 @login_required
 def dashboard():
     characters = Character.query.filter_by(user_id=current_user.id).all()
-    return render_template('dashboard.html', characters=characters)
+    skills = Skill.query.filter_by(user_id=current_user.id).all()
+    return render_template('dashboard.html', characters=characters,skills=skills)
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/create_skill', methods=['GET', 'POST'])
+@login_required
+def create_skill():
+    if request.method == 'POST':
+        name = request.form['name']
+        description = request.form['description']
+        skill = Skill(name=name, description=description, user_id=current_user.id)
+        db.session.add(skill)
+        db.session.commit()
+        return redirect(url_for('dashboard'))
+    return render_template('create_skill.html')
 
 @app.route('/create_character', methods=['GET', 'POST'])
 @login_required
